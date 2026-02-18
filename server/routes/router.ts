@@ -100,7 +100,7 @@ router.get('/usuarios/detalle', (  req: Request, res: Response ) => {
 
     res.json({
         ok: true,
-        clientes: usuariosConectados.getLista()
+        clientes: usuariosConectados.getListaCompleta()
     });
 
     

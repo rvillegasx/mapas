@@ -5,3 +5,24 @@
   <div class="connection-dot" [class.connected]="wsService.socketStatus"></div>
   <div #map id="map"></div>
 </div>
+
+<div class="mi-nombre">
+  <label>Tu nombre:</label>
+  <input type="text"
+        [(ngModel)]="miNombre"
+        (keyup.enter)="cambiarNombre()"
+        placeholder="Escribe tu nombre y presiona Enter"
+        maxlength="30">
+</div>
+
+<div class="sesiones">
+  <h3>Sesiones conectadas <span class="sesiones-count">{{ usuarios.length }}</span></h3>
+  <div class="sesiones-lista">
+    <div class="sesion-card" *ngFor="let usuario of usuarios">
+      <span class="sesion-icono">👤</span>
+      <span class="sesion-nombre">{{ usuario.nombre === 'sin-nombre' ? 'Anónimo' : usuario.nombre }}</span>
+      <span class="sesion-ubicacion" *ngIf="usuario.ciudad">— {{ usuario.ciudad }}, {{ usuario.estado }}, {{ usuario.pais }}</span>
+    </div>
+    <p class="sesiones-vacio" *ngIf="usuarios.length === 0">Sin sesiones conectadas.</p>
+  </div>
+</div>

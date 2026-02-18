@@ -56,9 +56,9 @@ This is a real-time collaborative Google Maps app built with **Angular 7.2** and
 
 ### Key Files — Client
 
-- `client/src/app/mapa/mapa.component.ts` — Main feature component; manages Google Maps lifecycle, marker state, user interactions, and WebSocket event handling
-- `client/src/app/mapa/mapa.component.html` — Template; includes the map container and WebSocket connection status indicator
-- `client/src/app/mapa/mapa.component.css` — Styles for the map wrapper and connection dot indicator
+- `client/src/app/mapa/mapa.component.ts` — Main feature component; manages Google Maps lifecycle, marker state, user interactions, WebSocket event handling, connected sessions list, and user name configuration
+- `client/src/app/mapa/mapa.component.html` — Template; includes the map container, connection status indicator, name input, and connected sessions list
+- `client/src/app/mapa/mapa.component.css` — Styles for the map wrapper, connection dot, name input, and sessions list
 - `client/src/app/services/websocket.service.ts` — Singleton service wrapping `ngx-socket-io`; exposes `emit()` and `listen()` helpers; tracks connection state via `socketStatus: boolean`
 - `client/src/app/interfaces/lugar.ts` — `Lugar` interface: `{ id?, nombre, lat, lng }`
 - `client/src/environments/environment.ts` — Dev config: `serverUrl: 'http://localhost:3000'`, `googleMapsApiKey` (ignored by git)
@@ -69,12 +69,13 @@ This is a real-time collaborative Google Maps app built with **Angular 7.2** and
 - `server/index.ts` — Entry point; configures Express middleware (JSON, CORS), mounts routes, and starts the server
 - `server/classes/server.ts` — Singleton `Server` class; creates Express app, HTTP/HTTPS server, and Socket.io instance; registers all socket event handlers
 - `server/routes/router.ts` — REST endpoints (`/mapa`, `/grafica`, `/usuarios`, `/mensajes/:id`)
-- `server/sockets/socket.ts` — Socket.io event handlers for markers, users, and messages
+- `server/sockets/socket.ts` — Socket.io event handlers for markers, users, messages, and IP geolocation on connect
 - `server/global/state.ts` — Shared singleton instances of `Mapa` and `UsuariosLista`; holds seed marker data; imported by both `router.ts` and `socket.ts` to avoid circular dependencies
 - `server/classes/mapa.ts` — `Mapa` class; in-memory CRUD for markers
 - `server/classes/marcador.ts` — `Marcador` class: `{ id, nombre, lat, lng }`
-- `server/classes/usuario.ts` — `Usuario` class: `{ id, nombre, sala }`
-- `server/classes/usuarios-lista.ts` — `UsuariosLista` class; manages connected users list (add, remove, update, filter by room)
+- `server/classes/usuario.ts` — `Usuario` class: `{ id, nombre, sala, ciudad, estado, pais, lat, lon, isp, mobile }`
+- `server/classes/usuarios-lista.ts` — `UsuariosLista` class; manages connected users list (add, remove, update, filter by room); `getLista()` returns named users only, `getListaCompleta()` returns all including anonymous
+- `server/classes/geo-cache.ts` — `GeoCache` class; JSON-file-based cache for IP geolocation lookups; avoids redundant calls to ip-api.com; persists to `server/dist/data/geo-cache.json`
 - `server/classes/grafica.ts` — `GraficaData` class; manages chart values for real-time voting
 - `server/global/environment.ts` — Exports `SERVER_PORT` from `process.env.PORT` or defaults to `3000`
 
@@ -100,7 +101,7 @@ This is a real-time collaborative Google Maps app built with **Angular 7.2** and
 | GET | `/grafica` | Get chart data |
 | POST | `/grafica` | Increment chart value (`{ opcion, unidades }`) |
 | GET | `/usuarios` | Get connected client IDs |
-| GET | `/usuarios/detalle` | Get connected users with names |
+| GET | `/usuarios/detalle` | Get all connected users (including anonymous) with geolocation |
 | POST | `/mensajes/:id` | Send private message to user (`{ de, cuerpo }`) |
 
 ### Environment Configuration
@@ -121,6 +122,20 @@ A small dot in the top-right corner of the map reflects the WebSocket connection
 - **Green** — connected to backend
 
 Driven by `WebsocketService.socketStatus` (updated on `connect`/`disconnect` socket events). No additional logic required in the component — Angular's class binding `[class.connected]="wsService.socketStatus"` handles the toggle.
+
+### Connected Sessions Panel
+
+Below the map, the app displays all connected sessions in real time:
+- Each session shows a name (or "Anonimo" if not configured) and geolocation (city, state, country)
+- The initial list is fetched via HTTP GET `/usuarios/detalle` to avoid WebSocket timing issues
+- Real-time updates arrive via the `usuarios-activos` WebSocket event
+- Users can set their display name via an input field that emits `configurar-usuario`
+
+### IP Geolocation
+
+When a client connects, the server resolves their IP address to a geographic location using `ip-api.com` (free, no API key required). The geolocation data is cached locally in a JSON file (`server/dist/data/geo-cache.json`) to avoid redundant API calls. Fields stored: `ciudad`, `estado`, `pais`, `lat`, `lon`, `isp`, `mobile`.
+
+In development, local IPs (`127.0.0.1`, `::1`) are replaced with a hardcoded IP (`187.136.58.115`) defined as `DEV_IP` in `server/sockets/socket.ts`.
 
 ### Google Maps
 

@@ -39,3 +39,4 @@ client/.angular/
 .DS_Store
 Thumbs.db
 client/src/environments/
+server/data/geo-cache.json

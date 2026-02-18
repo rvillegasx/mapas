@@ -29,9 +29,14 @@ export class UsuariosLista {
 
     }
 
-    // Obtener lista de usuarios
+    // Obtener lista de usuarios (solo los que tienen nombre configurado)
     public getLista() {
         return this.lista.filter( usuario => usuario.nombre !== 'sin-nombre' );
+    }
+
+    // Obtener lista completa incluyendo sesiones anónimas
+    public getListaCompleta() {
+        return this.lista;
     }
 
     // Obtener un usuario

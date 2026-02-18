@@ -1,6 +1,6 @@
 # Mapas
 
-Aplicacion colaborativa de Google Maps en tiempo real. Multiples usuarios pueden agregar, mover y eliminar marcadores en un mapa compartido. Los cambios se sincronizan instantaneamente entre todos los clientes conectados mediante WebSockets.
+Aplicacion colaborativa de Google Maps en tiempo real. Multiples usuarios pueden agregar, mover y eliminar marcadores en un mapa compartido. Los cambios se sincronizan instantaneamente entre todos los clientes conectados mediante WebSockets. La app muestra las sesiones conectadas con geolocalizacion por IP y permite a cada usuario configurar su nombre.
 
 ## Stack
 
@@ -20,10 +20,11 @@ mapas/
 │   ├── angular.json
 │   └── package.json
 └── server/          ← Node.js backend (Express + Socket.io)
-    ├── classes/     ← Modelos (Server, Usuario, Mapa, Marcador, Grafica)
+    ├── classes/     ← Modelos (Server, Usuario, Mapa, Marcador, Grafica, GeoCache)
     ├── routes/      ← Endpoints REST
     ├── sockets/     ← Handlers de eventos WebSocket
     ├── global/      ← Configuracion (puerto, environment)
+    ├── dist/data/   ← Cache de geolocalizacion por IP (generado en runtime)
     └── package.json
 ```
 
@@ -78,6 +79,9 @@ El cliente queda disponible en `http://localhost:4200`.
 | `marcador-nuevo` | emit & listen | Agregar marcador |
 | `marcador-mover` | emit & listen | Mover marcador |
 | `marcador-borrar` | emit & listen | Eliminar marcador |
+| `configurar-usuario` | emit | Configurar nombre de usuario |
+| `usuarios-activos` | listen | Lista actualizada de sesiones conectadas |
+| `obtener-usuarios` | emit | Solicitar lista de sesiones conectadas |
 
 ## Endpoints REST
 
@@ -87,7 +91,7 @@ El cliente queda disponible en `http://localhost:4200`.
 | GET | `/grafica` | Obtener datos de grafica |
 | POST | `/grafica` | Incrementar valores de grafica |
 | GET | `/usuarios` | IDs de clientes conectados |
-| GET | `/usuarios/detalle` | Lista de usuarios con nombre |
+| GET | `/usuarios/detalle` | Lista de todas las sesiones conectadas con geolocalizacion |
 | POST | `/mensajes/:id` | Enviar mensaje privado a un usuario |
 
 ## Scripts disponibles

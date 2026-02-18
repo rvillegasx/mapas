@@ -18,11 +18,15 @@ export class MapaComponent implements OnInit {
   infoWindows: google.maps.InfoWindow[] = [];
 
   lugares: Lugar[] = [];
+  usuarios: Array<{ id: string, nombre: string, ciudad: string, estado: string, pais: string }> = [];
+  miNombre = 'Anónimo';
 
   constructor(private http: HttpClient,
               public wsService: WebsocketService) { }
 
   ngOnInit() {
+    this.escucharUsuarios();
+
     this.cargarScript().then(() => {
       this.http.get(`${environment.serverUrl}/mapa`)
           .subscribe( (lugares: Lugar[]) => {
@@ -71,6 +75,27 @@ export class MapaComponent implements OnInit {
               break;
             }
           }
+        });
+
+  }
+
+  cambiarNombre() {
+    const nombre = this.miNombre.trim();
+    if ( nombre.length === 0 ) { return; }
+    this.wsService.emit('configurar-usuario', { nombre });
+  }
+
+  escucharUsuarios() {
+    // Carga inicial por HTTP (no depende del timing del socket)
+    this.http.get<{ ok: boolean, clientes: Array<{ id: string, nombre: string, ciudad: string, estado: string, pais: string }> }>(`${environment.serverUrl}/usuarios/detalle`)
+        .subscribe( resp => {
+          this.usuarios = resp.clientes;
+        });
+
+    // Actualizaciones en tiempo real por WebSocket
+    this.wsService.listen('usuarios-activos')
+        .subscribe( (usuarios: Array<{ id: string, nombre: string, ciudad: string, estado: string, pais: string }>) => {
+          this.usuarios = usuarios;
         });
   }
 
