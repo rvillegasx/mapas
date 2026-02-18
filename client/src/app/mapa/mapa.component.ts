@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Lugar } from '../interfaces/lugar';
 import { HttpClient } from '@angular/common/http';
 import { WebsocketService } from '../services/websocket.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-mapa',
@@ -22,13 +23,24 @@ export class MapaComponent implements OnInit {
               public wsService: WebsocketService) { }
 
   ngOnInit() {
-    this.http.get('https://api.bulkmatic.tech:3000/mapa')
-        .subscribe( (lugares: Lugar[]) => {
-          this.lugares = lugares;
-          this.cargarMapa();
-        });
+    this.cargarScript().then(() => {
+      this.http.get('https://api.bulkmatic.tech:3000/mapa')
+          .subscribe( (lugares: Lugar[]) => {
+            this.lugares = lugares;
+            this.cargarMapa();
+          });
 
-    this.escucharSockets();
+      this.escucharSockets();
+    });
+  }
+
+  private cargarScript(): Promise<void> {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${environment.googleMapsApiKey}`;
+      script.onload = () => resolve();
+      document.head.appendChild(script);
+    });
   }
 
   escucharSockets() {

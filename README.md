@@ -1,34 +1,111 @@
 # Mapas
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.4.
+Aplicacion colaborativa de Google Maps en tiempo real. Multiples usuarios pueden agregar, mover y eliminar marcadores en un mapa compartido. Los cambios se sincronizan instantaneamente entre todos los clientes conectados mediante WebSockets.
 
+## Stack
+
+| Capa | Tecnologia |
+|------|------------|
+| Frontend | Angular 7.2, Google Maps JS API |
+| Backend | Node.js, Express 4, Socket.io 2 |
+| Comunicacion | WebSockets (Socket.io) + REST |
+
+## Estructura del proyecto
+
+```
+mapas/
+├── client/          ← Angular frontend
+│   ├── src/
+│   ├── e2e/
+│   ├── angular.json
+│   └── package.json
+└── server/          ← Node.js backend (Express + Socket.io)
+    ├── classes/     ← Modelos (Server, Usuario, Mapa, Marcador, Grafica)
+    ├── routes/      ← Endpoints REST
+    ├── sockets/     ← Handlers de eventos WebSocket
+    ├── global/      ← Configuracion (puerto, environment)
+    └── package.json
+```
+
+## Prerequisitos
+
+- **Node.js 8.9.4** (recomendado via nvm)
+
+```bash
 nvm install 8.9.4
-npm install @angular/cli@7.3.4
-npm config set python "/usr/bin/python3"
-pyenv local 2.7.18
-claude --resume 3e2f4361-15ae-4578-bb17-10c361609cf1
+nvm use 8.9.4
+```
 
-## Development server
+## Ejecucion local
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Se necesitan **dos terminales** para correr cliente y servidor simultaneamente.
 
-## Code scaffolding
+### Terminal 1 — Server (puerto 3000)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```bash
+cd server
+npm install
+npm run build
+npm start
+```
 
-## Build
+Para desarrollo con recompilacion automatica, en lugar de `build` + `start`:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+```bash
+npm run dev        # compila en modo watch (tsc -w)
+# en otra terminal:
+npm start          # node dist/
+```
 
-## Running unit tests
+El servidor queda disponible en `http://localhost:3000`.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Terminal 2 — Client (puerto 4200)
 
-## Running end-to-end tests
+```bash
+cd client
+npm install
+npm start
+```
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+El cliente queda disponible en `http://localhost:4200`.
 
-## Further help
+> **Nota:** El cliente se conecta al backend via WebSocket. La URL del servidor esta configurada en `client/src/environments/environment.ts`. Verifica que apunte a `http://localhost:3000` para desarrollo local.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+## Eventos WebSocket
 
+| Evento | Direccion | Descripcion |
+|--------|-----------|-------------|
+| `marcador-nuevo` | emit & listen | Agregar marcador |
+| `marcador-mover` | emit & listen | Mover marcador |
+| `marcador-borrar` | emit & listen | Eliminar marcador |
+
+## Endpoints REST
+
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/mapa` | Obtener todos los marcadores |
+| GET | `/grafica` | Obtener datos de grafica |
+| POST | `/grafica` | Incrementar valores de grafica |
+| GET | `/usuarios` | IDs de clientes conectados |
+| GET | `/usuarios/detalle` | Lista de usuarios con nombre |
+| POST | `/mensajes/:id` | Enviar mensaje privado a un usuario |
+
+## Scripts disponibles
+
+### Client (`cd client`)
+
+| Comando | Descripcion |
+|---------|-------------|
+| `npm start` | Dev server con hot reload |
+| `npm test` | Unit tests (Karma/Jasmine) |
+| `npm run build` | Build de produccion |
+| `npm run lint` | TSLint |
+| `npm run e2e` | Tests E2E (Protractor) |
+
+### Server (`cd server`)
+
+| Comando | Descripcion |
+|---------|-------------|
+| `npm run build` | Compilar TypeScript |
+| `npm start` | Ejecutar servidor |
+| `npm run dev` | Compilar en modo watch |

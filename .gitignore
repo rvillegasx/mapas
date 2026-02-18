@@ -1,10 +1,12 @@
 # Compiled output
-dist/
+client/dist/
+server/dist/
 tmp/
 out-tsc/
 
 # Dependencies
-node_modules/
+client/node_modules/
+server/node_modules/
 
 # IDEs and editors
 .idea/
@@ -27,12 +29,13 @@ yarn-debug.log*
 yarn-error.log*
 
 # Testing
-coverage/
+client/coverage/
 
 # Angular cache
-.angular/
+client/.angular/
 .sass-cache/
 
 # System files
 .DS_Store
 Thumbs.db
+client/src/environments/
