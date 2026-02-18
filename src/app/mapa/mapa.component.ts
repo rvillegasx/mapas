@@ -118,7 +118,7 @@ export class MapaComponent implements OnInit {
       this.wsService.emit('marcador-borrar', marcador.id );
     });
 
-    google.maps.event.addDomListener( marker, 'drag', (coors) => {
+    google.maps.event.addDomListener( marker, 'drag', (coors: any) => {
       const nuevoMarcador = {
         lat: coors.latLng.lat(),
         lng: coors.latLng.lng(),

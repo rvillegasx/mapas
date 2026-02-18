@@ -4,6 +4,9 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 nvm install 8.9.4
 npm install @angular/cli@7.3.4
+npm config set python "/usr/bin/python3"
+pyenv local 2.7.18
+claude --resume 3e2f4361-15ae-4578-bb17-10c361609cf1
 
 ## Development server
 
