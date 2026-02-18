@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { Lugar } from '../interfaces/lugar';
 import { HttpClient } from '@angular/common/http';
 import { WebsocketService } from '../services/websocket.service';
@@ -18,8 +18,14 @@ export class MapaComponent implements OnInit {
   infoWindows: google.maps.InfoWindow[] = [];
 
   lugares: Lugar[] = [];
-  usuarios: Array<{ id: string, nombre: string, ciudad: string, estado: string, pais: string }> = [];
-  miNombre = 'Anónimo';
+  usuarios: Array<{ id: string, nombre: string, ciudad: string, estado: string, pais: string, lat: number, lon: number }> = [];
+  miNombre = 'Anonymous';
+  usuarioSeleccionado: { id: string, nombre: string, ciudad: string, estado: string, pais: string, lat: number, lon: number } = null;
+
+  @ViewChild('mapModal') mapModalElement: ElementRef;
+
+  @HostListener('document:keydown.escape')
+  onEscape() { this.cerrarModal(); }
 
   constructor(private http: HttpClient,
               public wsService: WebsocketService) { }
@@ -79,6 +85,28 @@ export class MapaComponent implements OnInit {
 
   }
 
+  abrirModalUbicacion(usuario: { nombre: string, lat: number, lon: number }) {
+    if ( !usuario.lat && !usuario.lon ) { return; }
+    this.usuarioSeleccionado = usuario as any;
+    setTimeout(() => {
+      if ( !this.mapModalElement ) { return; }
+      const latLng = new google.maps.LatLng(usuario.lat, usuario.lon);
+      const modalMap = new google.maps.Map(this.mapModalElement.nativeElement, {
+        center: latLng,
+        zoom: 12,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      });
+      const marker = new google.maps.Marker({ map: modalMap, position: latLng });
+      const nombre = usuario.nombre === 'sin-nombre' ? 'Anonymous' : usuario.nombre;
+      const infoWindow = new google.maps.InfoWindow({ content: `<b>${ nombre }</b>` });
+      infoWindow.open(modalMap, marker);
+    }, 0);
+  }
+
+  cerrarModal() {
+    this.usuarioSeleccionado = null;
+  }
+
   cambiarNombre() {
     const nombre = this.miNombre.trim();
     if ( nombre.length === 0 ) { return; }
@@ -87,14 +115,14 @@ export class MapaComponent implements OnInit {
 
   escucharUsuarios() {
     // Carga inicial por HTTP (no depende del timing del socket)
-    this.http.get<{ ok: boolean, clientes: Array<{ id: string, nombre: string, ciudad: string, estado: string, pais: string }> }>(`${environment.serverUrl}/usuarios/detalle`)
+    this.http.get<{ ok: boolean, clientes: Array<{ id: string, nombre: string, ciudad: string, estado: string, pais: string, lat: number, lon: number }> }>(`${environment.serverUrl}/usuarios/detalle`)
         .subscribe( resp => {
           this.usuarios = resp.clientes;
         });
 
     // Actualizaciones en tiempo real por WebSocket
     this.wsService.listen('usuarios-activos')
-        .subscribe( (usuarios: Array<{ id: string, nombre: string, ciudad: string, estado: string, pais: string }>) => {
+        .subscribe( (usuarios: Array<{ id: string, nombre: string, ciudad: string, estado: string, pais: string, lat: number, lon: number }>) => {
           this.usuarios = usuarios;
         });
   }

@@ -7,22 +7,30 @@
 </div>
 
 <div class="mi-nombre">
-  <label>Tu nombre:</label>
+  <label>Your name:</label>
   <input type="text"
         [(ngModel)]="miNombre"
         (keyup.enter)="cambiarNombre()"
-        placeholder="Escribe tu nombre y presiona Enter"
+        placeholder="Enter your name and press Enter"
         maxlength="30">
 </div>
 
 <div class="sesiones">
   <h3>Connected sessions <span class="sesiones-count">{{ usuarios.length }}</span></h3>
   <div class="sesiones-lista">
-    <div class="sesion-card" *ngFor="let usuario of usuarios">
+    <div class="sesion-card" *ngFor="let usuario of usuarios" (click)="abrirModalUbicacion(usuario)">
       <span class="sesion-icono">👤</span>
-      <span class="sesion-nombre">{{ usuario.nombre === 'sin-nombre' ? 'Anónimo' : usuario.nombre }}</span>
+      <span class="sesion-nombre">{{ usuario.nombre === 'sin-nombre' ? 'Anonymous' : usuario.nombre }}</span>
       <span class="sesion-ubicacion" *ngIf="usuario.ciudad">— {{ usuario.ciudad }}, {{ usuario.estado }}, {{ usuario.pais }}</span>
     </div>
     <p class="sesiones-vacio" *ngIf="usuarios.length === 0">No connected sessions.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="usuarioSeleccionado" (click)="cerrarModal()">
+  <div class="modal-contenido" (click)="$event.stopPropagation()">
+    <button class="modal-cerrar" (click)="cerrarModal()">&times;</button>
+    <h4 class="modal-titulo">{{ usuarioSeleccionado.nombre === 'sin-nombre' ? 'Anonymous' : usuarioSeleccionado.nombre }}</h4>
+    <div #mapModal class="modal-mapa"></div>
   </div>
 </div>
