@@ -17,7 +17,6 @@ export default class Server {
     public port: number;
 
     public io: socketIO.Server;
-    // private httpServer: http.Server;
 
     public nombreServidor: string = os.hostname();
 
@@ -28,8 +27,6 @@ export default class Server {
         this.app = express();
         this.port = SERVER_PORT;
 
-        // this.httpServer = new http.Server( this.app );
-        // this.io = socketIO( this.httpServer );
         if (this.nombreServidor === 'Robertos-MBP.civisit.com' || this.nombreServidor === 'Robertos-MacBook-Pro.local' || this.nombreServidor === 'ProLiant-DL20-Gen10') {
             this.httpServer = new http.Server(this.app);  // para cuando se usa normal
             this.io = socketIO( this.httpServer );

@@ -1,11 +1,7 @@
 import { Socket } from 'socket.io';
 import socketIO from 'socket.io';
-import { UsuariosLista } from '../classes/usuarios-lista';
 import { Usuario } from '../classes/usuario';
-import { mapa } from '../routes/router';
-
-
-export const usuariosConectados = new UsuariosLista();
+import { usuariosConectados, mapa } from '../global/state';
 
 //Mapas
 export const marcadorNuevo = ( cliente: Socket ) => {
@@ -89,10 +85,12 @@ export const configurarUsuario = ( cliente: Socket, io: socketIO.Server ) => {
 
         io.emit('usuarios-activos', usuariosConectados.getLista()  );
 
-        callback({
-            ok: true,
-            mensaje: `Usuario ${ payload.nombre }, configurado`
-        });
+        if (typeof callback === 'function') {
+            callback({
+                ok: true,
+                mensaje: `Usuario ${ payload.nombre }, configurado`
+            });
+        }
     });
 
 }

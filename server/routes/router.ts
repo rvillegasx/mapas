@@ -1,37 +1,10 @@
 
 import { Router, Request, Response } from 'express';
 import Server from '../classes/server';
-import { usuariosConectados } from '../sockets/socket';
+import { usuariosConectados, mapa } from '../global/state';
 import { GraficaData } from '../classes/grafica';
-import { Mapa } from '../classes/mapa';
 
 const router = Router();
-
-// Mapas
-
-export const mapa = new Mapa();
-const lugares = [
-    {
-      id: '1',
-      nombre: 'Udemy',
-      lat: 37.784679,
-      lng: -122.395936
-    },
-    {
-      id: '2',
-      nombre: 'Bahía de San Francisco',
-      lat: 37.798933,
-      lng: -122.377732
-    },
-    {
-      id: '3',
-      nombre: 'The Palace Hotel',
-      lat: 37.788578,
-      lng: -122.401745
-    }
-];
-
-mapa.marcadores.push(...lugares);
 
 router.get('/mapa', ( req: Request, res: Response  ) => {
 
@@ -104,7 +77,7 @@ router.get('/usuarios', (  req: Request, res: Response ) => {
     server.io.clients( ( err: any, clientes: string[] ) => {
 
         if ( err ) {
-            return res.json({
+            return res.status(500).json({
                 ok: false,
                 err
             })
