@@ -57,15 +57,20 @@ This is a real-time collaborative Google Maps app built with **Angular 7.2** and
 ### Key Files — Client
 
 - `client/src/app/mapa/mapa.component.ts` — Main feature component; manages Google Maps lifecycle, marker state, user interactions, and WebSocket event handling
-- `client/src/app/services/websocket.service.ts` — Singleton service wrapping `ngx-socket-io`; exposes `emit()` and `listen()` helpers
+- `client/src/app/mapa/mapa.component.html` — Template; includes the map container and WebSocket connection status indicator
+- `client/src/app/mapa/mapa.component.css` — Styles for the map wrapper and connection dot indicator
+- `client/src/app/services/websocket.service.ts` — Singleton service wrapping `ngx-socket-io`; exposes `emit()` and `listen()` helpers; tracks connection state via `socketStatus: boolean`
 - `client/src/app/interfaces/lugar.ts` — `Lugar` interface: `{ id?, nombre, lat, lng }`
+- `client/src/environments/environment.ts` — Dev config: `serverUrl: 'http://localhost:3000'`, `googleMapsApiKey` (ignored by git)
+- `client/src/environments/environment.prod.ts` — Prod config: `serverUrl: 'https://api.bulkmatic.tech:3000'` (ignored by git)
 
 ### Key Files — Server
 
 - `server/index.ts` — Entry point; configures Express middleware (JSON, CORS), mounts routes, and starts the server
 - `server/classes/server.ts` — Singleton `Server` class; creates Express app, HTTP/HTTPS server, and Socket.io instance; registers all socket event handlers
-- `server/routes/router.ts` — REST endpoints (`/mapa`, `/grafica`, `/usuarios`, `/mensajes/:id`); also holds seed marker data
-- `server/sockets/socket.ts` — Socket.io event handlers for markers, users, and messages; manages `UsuariosLista` instance
+- `server/routes/router.ts` — REST endpoints (`/mapa`, `/grafica`, `/usuarios`, `/mensajes/:id`)
+- `server/sockets/socket.ts` — Socket.io event handlers for markers, users, and messages
+- `server/global/state.ts` — Shared singleton instances of `Mapa` and `UsuariosLista`; holds seed marker data; imported by both `router.ts` and `socket.ts` to avoid circular dependencies
 - `server/classes/mapa.ts` — `Mapa` class; in-memory CRUD for markers
 - `server/classes/marcador.ts` — `Marcador` class: `{ id, nombre, lat, lng }`
 - `server/classes/usuario.ts` — `Usuario` class: `{ id, nombre, sala }`
@@ -98,9 +103,28 @@ This is a real-time collaborative Google Maps app built with **Angular 7.2** and
 | GET | `/usuarios/detalle` | Get connected users with names |
 | POST | `/mensajes/:id` | Send private message to user (`{ de, cuerpo }`) |
 
+### Environment Configuration
+
+Backend URL is configured per environment in `client/src/environments/`:
+
+| File | `serverUrl` | Used when |
+|---|---|---|
+| `environment.ts` | `http://localhost:3000` | `npm start` (dev) |
+| `environment.prod.ts` | `https://api.bulkmatic.tech:3000` | `npm run build` (prod) |
+
+Both files are excluded from git (`.gitignore`). When setting up locally, ensure `serverUrl` points to your running server instance.
+
+### Connection Status Indicator
+
+A small dot in the top-right corner of the map reflects the WebSocket connection state:
+- **Red** — disconnected from backend
+- **Green** — connected to backend
+
+Driven by `WebsocketService.socketStatus` (updated on `connect`/`disconnect` socket events). No additional logic required in the component — Angular's class binding `[class.connected]="wsService.socketStatus"` handles the toggle.
+
 ### Google Maps
 
-The Maps API script is loaded directly in `client/src/index.html` with a hardcoded API key. Types are provided by `@types/googlemaps`. The map is initialized inside `MapaComponent.ngAfterViewInit()`.
+The Maps API script is loaded dynamically in `MapaComponent.ngOnInit()` via a `<script>` tag appended to `document.head`. The API key comes from `environment.googleMapsApiKey`. Types are provided by `@types/googlemaps`. The map is initialized after the script loads.
 
 ### SSL/HTTPS
 
