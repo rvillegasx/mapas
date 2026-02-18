@@ -1,6 +1,7 @@
-<h1>Mapa</h1>
+<h1>Real Time Map</h1>
 <hr>
 
-<div #map id="map">
-
+<div class="map-wrapper">
+  <div class="connection-dot" [class.connected]="wsService.socketStatus"></div>
+  <div #map id="map"></div>
 </div>

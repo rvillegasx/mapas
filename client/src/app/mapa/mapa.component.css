@@ -1,0 +1,19 @@
+.map-wrapper {
+  position: relative;
+}
+
+.connection-dot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #e74c3c;
+  z-index: 10;
+  transition: background-color 0.3s ease;
+}
+
+.connection-dot.connected {
+  background-color: #2ecc71;
+}
