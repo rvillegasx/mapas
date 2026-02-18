@@ -68,7 +68,7 @@ export default class Server {
 
             // Mapas
             socket.marcadorNuevo( cliente );
-            socket.marcadorBorrar( cliente );
+            socket.marcadorBorrar( cliente, this.io );
             socket.marcadorMover( cliente );
 
             // Conectar cliente

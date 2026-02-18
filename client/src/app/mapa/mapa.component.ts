@@ -24,7 +24,7 @@ export class MapaComponent implements OnInit {
 
   ngOnInit() {
     this.cargarScript().then(() => {
-      this.http.get('https://api.bulkmatic.tech:3000/mapa')
+      this.http.get(`${environment.serverUrl}/mapa`)
           .subscribe( (lugares: Lugar[]) => {
             this.lugares = lugares;
             this.cargarMapa();
@@ -125,8 +125,6 @@ export class MapaComponent implements OnInit {
     });
 
     google.maps.event.addDomListener( marker, 'dblclick', (coors) => {
-      marker.setMap( null );
-      // disparar un evento de socket para borrar
       this.wsService.emit('marcador-borrar', marcador.id );
     });
 

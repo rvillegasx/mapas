@@ -24,13 +24,12 @@ export const marcadorMover = ( cliente: Socket ) => {
 
 }
 
-export const marcadorBorrar = ( cliente: Socket ) => {
+export const marcadorBorrar = ( cliente: Socket, io: socketIO.Server ) => {
 
     cliente.on('marcador-borrar', (id: string) => {
-        // console.log(marcador);
         if (id !== '1') {
             mapa.borrarMarcador( id );
-            cliente.broadcast.emit('marcador-borrar', id );
+            io.emit('marcador-borrar', id );
         }
     });
 

@@ -7,8 +7,9 @@ import { MapaComponent } from './mapa/mapa.component';
 import { HttpClientModule } from '@angular/common/http';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { environment } from '../environments/environment';
 
-const config: SocketIoConfig = { url: 'https://api.bulkmatic.tech:3000', options: {} };
+const config: SocketIoConfig = { url: environment.serverUrl, options: {} };
 
 
 @NgModule({
