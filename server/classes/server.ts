@@ -7,7 +7,8 @@ import https from 'https';   // para cuando se usa con ssl
 import * as socket from '../sockets/socket';
 
 import fs from 'fs';
-import os from 'os';
+
+const SSL_PATH = '/etc/letsencrypt/live/api.appsmx.tech';
 
 export default class Server {
 
@@ -18,8 +19,6 @@ export default class Server {
 
     public io: socketIO.Server;
 
-    public nombreServidor: string = os.hostname();
-
     private httpServer: http.Server | undefined;  // para cuando se usa normal
     private httpsServer: https.Server | undefined;  // para cuando se usa con ssl
 
@@ -27,18 +26,22 @@ export default class Server {
         this.app = express();
         this.port = SERVER_PORT;
 
-        if (this.nombreServidor === 'Robertos-MBP.civisit.com' || this.nombreServidor === 'Robertos-MacBook-Pro.local' || this.nombreServidor === 'ProLiant-DL20-Gen10') {
-            this.httpServer = new http.Server(this.app);  // para cuando se usa normal
-            this.io = socketIO( this.httpServer );
-        } else {
+        const sslDisponible = fs.existsSync(`${ SSL_PATH }/privkey.pem`)
+                           && fs.existsSync(`${ SSL_PATH }/cert.pem`)
+                           && fs.existsSync(`${ SSL_PATH }/chain.pem`);
+
+        if ( sslDisponible ) {
             this.httpsServer = new https.Server({
-                key: fs.readFileSync('/etc/letsencrypt/live/api.bulkmatic.tech/privkey.pem'),
-                cert: fs.readFileSync('/etc/letsencrypt/live/api.bulkmatic.tech/cert.pem'),
-                ca: fs.readFileSync('/etc/letsencrypt/live/api.bulkmatic.tech/chain.pem'),
+                key: fs.readFileSync(`${ SSL_PATH }/privkey.pem`),
+                cert: fs.readFileSync(`${ SSL_PATH }/cert.pem`),
+                ca: fs.readFileSync(`${ SSL_PATH }/chain.pem`),
                 requestCert: false,
                 rejectUnauthorized: false
             }, this.app );  // para cuando se usa con ssl
             this.io = socketIO( this.httpsServer );
+        } else {
+            this.httpServer = new http.Server(this.app);  // para cuando se usa normal
+            this.io = socketIO( this.httpServer );
         }
 
         this.escucharSockets();
@@ -49,14 +52,10 @@ export default class Server {
     }
 
     start(callback: any) {
-        if (this.nombreServidor === 'Robertos-MacBook-Pro.local' || this.nombreServidor === 'ProLiant-DL20-Gen10') {
-            if (this.httpServer) {
-                this.httpServer.listen( this.port, callback );
-            }
-        } else {
-            if (this.httpsServer) {
-                this.httpsServer.listen( this.port, callback );
-            }
+        if (this.httpsServer) {
+            this.httpsServer.listen( this.port, callback );
+        } else if (this.httpServer) {
+            this.httpServer.listen( this.port, callback );
         }
     }
 

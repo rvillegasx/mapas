@@ -16,13 +16,13 @@
 </div>
 
 <div class="sesiones">
-  <h3>Sesiones conectadas <span class="sesiones-count">{{ usuarios.length }}</span></h3>
+  <h3>Connected sessions <span class="sesiones-count">{{ usuarios.length }}</span></h3>
   <div class="sesiones-lista">
     <div class="sesion-card" *ngFor="let usuario of usuarios">
       <span class="sesion-icono">👤</span>
       <span class="sesion-nombre">{{ usuario.nombre === 'sin-nombre' ? 'Anónimo' : usuario.nombre }}</span>
       <span class="sesion-ubicacion" *ngIf="usuario.ciudad">— {{ usuario.ciudad }}, {{ usuario.estado }}, {{ usuario.pais }}</span>
     </div>
-    <p class="sesiones-vacio" *ngIf="usuarios.length === 0">Sin sesiones conectadas.</p>
+    <p class="sesiones-vacio" *ngIf="usuarios.length === 0">No connected sessions.</p>
   </div>
 </div>
