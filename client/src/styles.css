@@ -1,4 +1,10 @@
 
+body {
+    overflow-x: hidden;
+    max-width: 1140px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 #map {
     width: 100%;
