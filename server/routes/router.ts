@@ -109,6 +109,11 @@ router.get('/usuarios/detalle', (  req: Request, res: Response ) => {
 
 
 
+// Health check
+router.get('/health', ( req: Request, res: Response ) => {
+    res.json({ ok: true, status: 'running' });
+});
+
 export default router;
 
 
