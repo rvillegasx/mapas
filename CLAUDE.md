@@ -150,6 +150,10 @@ When a client connects, the server resolves their IP address to a geographic loc
 
 In development, local IPs (`127.0.0.1`, `::1`) are replaced with a hardcoded IP (`187.136.58.115`) defined as `DEV_IP` in `server/sockets/socket.ts`.
 
+### Favicon
+
+The app uses an inline SVG data URI in `index.html` to display a globe emoji (🌍) as the favicon. The default Angular `favicon.ico` has been removed and is not listed in the `assets` array of `angular.json`. Do not re-add `src/favicon.ico` to avoid overriding the inline icon in production builds.
+
 ### Google Maps
 
 The Maps API script is loaded dynamically in `MapaComponent.ngOnInit()` via a `<script>` tag appended to `document.head`. The API key comes from `environment.googleMapsApiKey`. Types are provided by `@types/googlemaps`. The map is initialized after the script loads.
