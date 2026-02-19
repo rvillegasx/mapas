@@ -1,3 +1,8 @@
+.app-titulo {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
 .map-wrapper {
   position: relative;
 }
@@ -23,6 +28,7 @@
   align-items: center;
   gap: 8px;
   margin-top: 16px;
+  flex-wrap: wrap;
 }
 
 .mi-nombre label {
@@ -30,16 +36,45 @@
   color: #555;
 }
 
+.mi-nombre-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
 .mi-nombre input {
   border: 1px solid #ddd;
   border-radius: 20px;
-  padding: 4px 12px;
-  font-size: 13px;
+  padding: 8px 14px;
+  font-size: 14px;
   outline: none;
+  min-height: 44px;
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .mi-nombre input:focus {
   border-color: #3498db;
+}
+
+.mi-nombre-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 14px;
+  min-height: 44px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.mi-nombre-btn:hover {
+  background-color: #2980b9;
 }
 
 .sesiones {
@@ -75,10 +110,13 @@
   background-color: #f5f5f5;
   border: 1px solid #ddd;
   border-radius: 20px;
-  padding: 4px 12px;
+  padding: 8px 14px;
   font-size: 13px;
   cursor: pointer;
   transition: background-color 0.2s;
+  min-height: 44px;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .sesion-card:hover {
@@ -87,11 +125,23 @@
 
 .sesion-icono {
   font-size: 16px;
+  flex-shrink: 0;
+}
+
+.sesion-nombre {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
 }
 
 .sesion-ubicacion {
   color: #999;
   font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .sesiones-vacio {
@@ -135,6 +185,11 @@
   line-height: 1;
   padding: 0;
   z-index: 1;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-cerrar:hover {
@@ -149,6 +204,34 @@
 
 .modal-mapa {
   width: 100%;
-  height: 350px;
+  height: 50vh;
+  min-height: 200px;
+  max-height: 350px;
   border-radius: 4px;
+}
+
+/* Mobile breakpoint */
+@media (max-width: 576px) {
+  .app-titulo {
+    font-size: 1.2rem;
+  }
+
+  .mi-nombre {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mi-nombre label {
+    margin-bottom: 4px;
+  }
+
+  .sesion-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .modal-contenido {
+    max-width: 95vw;
+    padding: 12px;
+  }
 }
