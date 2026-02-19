@@ -58,7 +58,7 @@ This is a real-time collaborative Google Maps app built with **Angular 7.2** and
 
 - `client/src/app/mapa/mapa.component.ts` — Main feature component; manages Google Maps lifecycle, marker state, user interactions, WebSocket event handling, connected sessions list, and user name configuration
 - `client/src/app/mapa/mapa.component.html` — Template; includes the map container, connection status indicator, name input, and connected sessions list
-- `client/src/app/mapa/mapa.component.css` — Styles for the map wrapper, connection dot, name input, and sessions list
+- `client/src/app/mapa/mapa.component.css` — Styles for the map wrapper, connection dot, name input, sessions list, and mobile responsive breakpoints
 - `client/src/app/services/websocket.service.ts` — Singleton service wrapping `ngx-socket-io`; exposes `emit()` and `listen()` helpers; tracks connection state via `socketStatus: boolean`
 - `client/src/app/interfaces/lugar.ts` — `Lugar` interface: `{ id?, nombre, lat, lng }`
 - `client/src/environments/environment.ts` — Dev config: `serverUrl: 'http://localhost:3000'`, `googleMapsApiKey` (ignored by git)
@@ -131,6 +131,18 @@ Below the map, the app displays all connected sessions in real time:
 - The initial list is fetched via HTTP GET `/usuarios/detalle` to avoid WebSocket timing issues
 - Real-time updates arrive via the `usuarios-activos` WebSocket event
 - Users can set their display name via an input field that emits `configurar-usuario`
+- An explicit "OK" button is provided next to the input for mobile users (no Enter key)
+
+### Mobile Responsiveness
+
+The client UI is optimized for mobile devices:
+
+- **Map height**: Uses `70vh` (viewport-relative) with `min-height: 250px` / `max-height: 600px` instead of a fixed pixel height
+- **Touch targets**: All interactive elements (input, buttons, session cards, modal close) have a minimum touch area of 44px (Apple/Google recommended minimum)
+- **touch-action**: The map container uses `touch-action: none` to prevent gesture conflicts with page scrolling
+- **Text overflow**: Session card names and locations use `text-overflow: ellipsis` to prevent layout breaking on narrow screens
+- **Modal**: Map height uses `50vh` with min/max constraints; close button has a 44x44px touch area
+- **Mobile breakpoint** (`@media max-width: 576px`): Title font shrinks, name input stacks vertically, session cards go full-width, modal gets wider margins
 
 ### IP Geolocation
 
