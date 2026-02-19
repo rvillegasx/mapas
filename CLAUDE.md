@@ -143,6 +143,8 @@ The client UI is optimized for mobile devices:
 - **Text overflow**: Session card names and locations use `text-overflow: ellipsis` to prevent layout breaking on narrow screens
 - **Modal**: Map height uses `50vh` with min/max constraints; close button has a 44x44px touch area
 - **Mobile breakpoint** (`@media max-width: 576px`): Title font shrinks, name input stacks vertically, session cards go full-width, modal gets wider margins
+- **Layout**: Body uses `container-fluid` (full-width on mobile) with `max-width: 1140px` and `margin: auto` to preserve the centered layout on desktop. `overflow-x: hidden` prevents horizontal scroll caused by map elements
+- **Name input**: The input wrapper has `max-width: 350px` to keep it compact on desktop
 
 ### IP Geolocation
 
