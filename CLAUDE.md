@@ -68,7 +68,7 @@ This is a real-time collaborative Google Maps app built with **Angular 7.2** and
 
 - `server/index.ts` — Entry point; configures Express middleware (JSON, CORS), mounts routes, and starts the server
 - `server/classes/server.ts` — Singleton `Server` class; creates Express app, HTTP/HTTPS server, and Socket.io instance; registers all socket event handlers
-- `server/routes/router.ts` — REST endpoints (`/mapa`, `/grafica`, `/usuarios`, `/mensajes/:id`)
+- `server/routes/router.ts` — REST endpoints (`/mapa`, `/grafica`, `/usuarios`, `/mensajes/:id`, `/health`)
 - `server/sockets/socket.ts` — Socket.io event handlers for markers, users, messages, and IP geolocation on connect
 - `server/global/state.ts` — Shared singleton instances of `Mapa` and `UsuariosLista`; holds seed marker data; imported by both `router.ts` and `socket.ts` to avoid circular dependencies
 - `server/classes/mapa.ts` — `Mapa` class; in-memory CRUD for markers
@@ -103,6 +103,7 @@ This is a real-time collaborative Google Maps app built with **Angular 7.2** and
 | GET | `/usuarios` | Get connected client IDs |
 | GET | `/usuarios/detalle` | Get all connected users (including anonymous) with geolocation |
 | POST | `/mensajes/:id` | Send private message to user (`{ de, cuerpo }`) |
+| GET | `/health` | Health check; returns `{ ok: true, status: 'running' }` |
 
 ### Environment Configuration
 
@@ -143,7 +144,25 @@ The Maps API script is loaded dynamically in `MapaComponent.ngOnInit()` via a `<
 
 ### SSL/HTTPS
 
-The `Server` class in `server/classes/server.ts` detects the hostname to decide between HTTP (development) and HTTPS (production with Let's Encrypt certificates at `/etc/letsencrypt/live/api.bulkmatic.tech/`).
+The `Server` class in `server/classes/server.ts` checks if SSL certificate files exist at `/etc/letsencrypt/live/api.appsmx.tech/` to decide between HTTP (development) and HTTPS (production with Let's Encrypt certificates).
+
+### Docker
+
+The server can be containerized and distributed via Docker Hub. Key files:
+
+- `server/Dockerfile` — Multi-stage build: compiles TypeScript in a build stage, then produces a lightweight production image with only runtime dependencies
+- `server/.dockerignore` — Excludes `node_modules`, `dist`, and other unnecessary files from the build context
+
+The container requires two bind mounts:
+
+| Host path | Container path | Purpose |
+|---|---|---|
+| `/etc/letsencrypt/live/api.appsmx.tech/` | `/etc/letsencrypt/live/api.appsmx.tech/` | SSL certificates (read-only) |
+| Local data directory (e.g. `~/mapas/server-data/`) | `/app/dist/data/` | Persist `geo-cache.json` across container restarts |
+
+The SSL path is hardcoded in `server/classes/server.ts` (line 11, `SSL_PATH` constant). The data path resolves from `__dirname` in `server/classes/geo-cache.ts`.
+
+See `server/README.md` for full build, push, and deployment instructions.
 
 ## Linting Rules (client/tslint.json)
 
