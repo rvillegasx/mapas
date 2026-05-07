@@ -13,16 +13,21 @@ This is a monorepo with two directories:
 
 ### Client
 
-All Angular commands must be run from the `client/` directory:
+All Angular commands must be run from the `client/` directory.
+
+**Node version:** Angular 7.2 requires Node 10 (e.g. `nvm use 10`). Newer Node versions (12+) fail at install/build with errors like `No such module: http_parser` because legacy native bindings used by `spdy`/`http-deceiver` were removed.
 
 ```bash
 cd client
-npm start        # Dev server at http://localhost:4200
+nvm use 10       # Required: Angular 7.2 only works on Node 10
+npm start        # Dev server at http://localhost:4200 (uses environment.ts)
 npm test         # Karma/Jasmine unit tests
-npm run build    # Production build (output: client/dist/)
+npm run build    # Production build with --prod (output: client/dist/mapas/, uses environment.prod.ts)
 npm run lint     # TSLint
 npm run e2e      # Protractor E2E tests
 ```
+
+The `build` script runs `ng build --prod`, so `environment.prod.ts` is applied automatically — no need to pass `--prod` manually.
 
 To run a single test file, use the Angular CLI directly:
 ```bash
@@ -62,7 +67,7 @@ This is a real-time collaborative Google Maps app built with **Angular 7.2** and
 - `client/src/app/services/websocket.service.ts` — Singleton service wrapping `ngx-socket-io`; exposes `emit()` and `listen()` helpers; tracks connection state via `socketStatus: boolean`
 - `client/src/app/interfaces/lugar.ts` — `Lugar` interface: `{ id?, nombre, lat, lng }`
 - `client/src/environments/environment.ts` — Dev config: `serverUrl: 'http://localhost:3000'`, `googleMapsApiKey` (ignored by git)
-- `client/src/environments/environment.prod.ts` — Prod config: `serverUrl: 'https://api.bulkmatic.tech:3000'` (ignored by git)
+- `client/src/environments/environment.prod.ts` — Prod config: `serverUrl: 'https://mapas.appsmx.tech'` (ignored by git)
 
 ### Key Files — Server
 
@@ -112,7 +117,7 @@ Backend URL is configured per environment in `client/src/environments/`:
 | File | `serverUrl` | Used when |
 |---|---|---|
 | `environment.ts` | `http://localhost:3000` | `npm start` (dev) |
-| `environment.prod.ts` | `https://api.bulkmatic.tech:3000` | `npm run build` (prod) |
+| `environment.prod.ts` | `https://mapas.appsmx.tech` | `npm run build` (prod) |
 
 Both files are excluded from git (`.gitignore`). When setting up locally, ensure `serverUrl` points to your running server instance.
 
