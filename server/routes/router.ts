@@ -110,6 +110,12 @@ router.get('/usuarios/detalle', (  req: Request, res: Response ) => {
 
 
 // Health check
+// La raíz no tiene página (esto es solo el backend): manda a la app.
+// APP_URL permite cambiar el destino sin tocar código.
+router.get('/', ( req: Request, res: Response ) => {
+    res.redirect( 302, process.env.APP_URL || 'https://maps.appsmx.tech' );
+});
+
 router.get('/health', ( req: Request, res: Response ) => {
     res.json({ ok: true, status: 'running' });
 });
