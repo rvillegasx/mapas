@@ -1,0 +1,19 @@
+# Dokploy construye el servidor desde este repo (server/Dockerfile).
+# Antes usaba la imagen rvillegasx/mapas-server:latest construida a mano.
+services:
+  mapas-server:
+    build:
+      context: ./server
+    restart: unless-stopped
+    environment:
+      - APP_URL=${APP_URL:-https://maps.appsmx.tech}
+    volumes:
+      - /home/rvillegas/mapas/server-data:/app/dist/data
+    networks:
+      - dokploy-network
+      - default
+    expose:
+      - "3000"
+networks:
+  dokploy-network:
+    external: true
