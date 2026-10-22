@@ -6,17 +6,20 @@ Aplicacion colaborativa de Google Maps en tiempo real. Multiples usuarios pueden
 
 | Capa | Tecnologia |
 |------|------------|
-| Frontend | Angular 7.2, Google Maps JS API |
-| Backend | Node.js, Express 4, Socket.io 2 |
+| Frontend | Angular 22 (standalone, signals), Google Maps JS API |
+| Backend | Node.js 24, Express 4, Socket.io 4 |
+| Publicación | https://mapas.appsmx.tech — un solo contenedor sirve la app, la API y los websockets |
 | Comunicacion | WebSockets (Socket.io) + REST |
 
 ## Estructura del proyecto
 
 ```
 mapas/
+├── Dockerfile       ← Imagen única: compila client/ y server/ (lo usa Dokploy)
+├── docker-compose.yml
 ├── client/          ← Angular frontend
 │   ├── src/
-│   ├── e2e/
+│   ├── proxy.conf.json  ← ng serve → API/socket en localhost:3000
 │   ├── angular.json
 │   └── package.json
 └── server/          ← Node.js backend (Express + Socket.io)
@@ -30,12 +33,8 @@ mapas/
 
 ## Prerequisitos
 
-- **Node.js 8.9.4** (recomendado via nvm)
-
-```bash
-nvm install 8.9.4
-nvm use 8.9.4
-```
+- **Node.js 24** (el cliente ya no necesita Node 10)
+- Para ver el mapa en local: `GOOGLE_MAPS_API_KEY` en el entorno del servidor
 
 ## Ejecucion local
 
@@ -68,9 +67,17 @@ npm install
 npm start
 ```
 
-El cliente queda disponible en `http://localhost:4200`.
+El cliente queda disponible en `http://localhost:4200`. `ng serve` manda `/mapa`, `/usuarios`,
+`/config.js` y `/socket.io` al servidor en `localhost:3000` (`client/proxy.conf.json`): el cliente
+usa rutas relativas y no tiene URL del servidor configurada.
 
-> **Nota:** El cliente se conecta al backend via WebSocket. La URL del servidor esta configurada en `client/src/environments/environment.ts`. Verifica que apunte a `http://localhost:3000` para desarrollo local.
+### Con Docker (igual que producción)
+
+```bash
+docker build -t mapas .
+docker run --rm -p 3000:3000 -e GOOGLE_MAPS_API_KEY=... mapas
+# http://localhost:3000
+```
 
 ## Eventos WebSocket
 

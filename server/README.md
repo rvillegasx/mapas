@@ -1,3 +1,7 @@
+> **Nota (22-oct-2026):** el despliegue ya no usa Docker Hub ni `server/Dockerfile`. Dokploy
+> construye con el `Dockerfile` de la raíz (app + servidor). Ver `CLAUDE.md` → Docker / Deploy.
+> Lo de abajo es histórico.
+
 
 # Socket-Server
 

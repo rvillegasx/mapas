@@ -1,0 +1,47 @@
+<h1 class="app-titulo">Real Time Map</h1>
+<hr>
+
+<div class="map-wrapper">
+  <div class="connection-dot" [class.connected]="wsService.socketStatus()"></div>
+  <div #map id="map"></div>
+</div>
+
+<div class="mi-nombre">
+  <label for="mi-nombre-input">Your name:</label>
+  <div class="mi-nombre-input-wrapper">
+    <input id="mi-nombre-input"
+          type="text"
+          [(ngModel)]="miNombre"
+          (keyup.enter)="cambiarNombre()"
+          placeholder="Enter your name"
+          maxlength="30">
+    <button class="mi-nombre-btn" (click)="cambiarNombre()">OK</button>
+  </div>
+</div>
+
+<div class="sesiones">
+  <h3>Connected sessions <span class="sesiones-count">{{ usuarios().length }}</span></h3>
+  <div class="sesiones-lista">
+    @for (usuario of usuarios(); track usuario.id) {
+      <div class="sesion-card" (click)="abrirModalUbicacion(usuario)">
+        <span class="sesion-icono">👤</span>
+        <span class="sesion-nombre">{{ nombreVisible(usuario) }}</span>
+        @if (usuario.ciudad) {
+          <span class="sesion-ubicacion">— {{ usuario.ciudad }}, {{ usuario.estado }}, {{ usuario.pais }}</span>
+        }
+      </div>
+    } @empty {
+      <p class="sesiones-vacio">No connected sessions.</p>
+    }
+  </div>
+</div>
+
+@if (usuarioSeleccionado(); as seleccionado) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-contenido" (click)="$event.stopPropagation()">
+      <button class="modal-cerrar" (click)="cerrarModal()">&times;</button>
+      <h4 class="modal-titulo">{{ nombreVisible(seleccionado) }}</h4>
+      <div #mapModal class="modal-mapa"></div>
+    </div>
+  </div>
+}

@@ -1,6 +1,6 @@
 import express from 'express';
 import { SERVER_PORT } from '../global/environment';
-import socketIO from 'socket.io';
+import { Server as IOServer } from 'socket.io';
 import http from 'http';
 import https from 'https';   // para cuando se usa con ssl
 
@@ -17,7 +17,7 @@ export default class Server {
     public app: express.Application;
     public port: number;
 
-    public io: socketIO.Server;
+    public io: IOServer;
 
     private httpServer: http.Server | undefined;  // para cuando se usa normal
     private httpsServer: https.Server | undefined;  // para cuando se usa con ssl
@@ -38,10 +38,10 @@ export default class Server {
                 requestCert: false,
                 rejectUnauthorized: false
             }, this.app );  // para cuando se usa con ssl
-            this.io = socketIO( this.httpsServer );
+            this.io = new IOServer( this.httpsServer );
         } else {
             this.httpServer = new http.Server(this.app);  // para cuando se usa normal
-            this.io = socketIO( this.httpServer );
+            this.io = new IOServer( this.httpServer );
         }
 
         this.escucharSockets();

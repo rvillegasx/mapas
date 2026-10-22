@@ -46,3 +46,9 @@ En el servicio **mapasserver-service-ssnwbz**:
    - `node -v` en el contenedor = v24.
 
 **Rollback:** volver el provider a la imagen `rvillegasx/mapas-server:latest` (sigue en Beta) y Deploy.
+
+## Actualización 22-oct-2026
+
+Con el plan de Angular (`docs/ANGULAR_UPGRADE_PLAN.md`) la app ya no vive en maps.appsmx.tech:
+el contenedor de mapas.appsmx.tech sirve la app, la API y los websockets. La redirección de `/` y
+la variable `APP_URL` se quitaron; el `Dockerfile` está en la raíz del repo (antes `server/`).
