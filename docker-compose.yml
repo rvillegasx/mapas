@@ -1,12 +1,14 @@
-# Dokploy construye el servidor desde este repo (server/Dockerfile).
-# Antes usaba la imagen rvillegasx/mapas-server:latest construida a mano.
+# Dokploy construye desde este repo con el Dockerfile de la raíz:
+# app Angular (client/) + API y websockets (server/) en mapas.appsmx.tech.
 services:
   mapas-server:
     build:
-      context: ./server
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      - APP_URL=${APP_URL:-https://maps.appsmx.tech}
+      # Llave de Google Maps para el navegador (Dokploy → Environment). No va en git.
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-}
     volumes:
       - /home/rvillegas/mapas/server-data:/app/dist/data
     networks:

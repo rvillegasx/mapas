@@ -74,23 +74,9 @@ router.get('/usuarios', (  req: Request, res: Response ) => {
 
     const server = Server.instance;
 
-    server.io.clients( ( err: any, clientes: string[] ) => {
-
-        if ( err ) {
-            return res.status(500).json({
-                ok: false,
-                err
-            })
-        }
-
-
-        res.json({
-            ok: true,
-            clientes
-        });
-
-
-    });
+    server.io.allSockets()
+        .then( ids => res.json({ ok: true, clientes: [ ...ids ] }) )
+        .catch( err => res.status(500).json({ ok: false, err: String( err ) }) );
 
 });
 
@@ -109,13 +95,17 @@ router.get('/usuarios/detalle', (  req: Request, res: Response ) => {
 
 
 
-// Health check
-// La raíz no tiene página (esto es solo el backend): manda a la app.
-// APP_URL permite cambiar el destino sin tocar código.
-router.get('/', ( req: Request, res: Response ) => {
-    res.redirect( 302, process.env.APP_URL || 'https://maps.appsmx.tech' );
+// Configuración del cliente: la llave de Google Maps viene de la variable
+// GOOGLE_MAPS_API_KEY (Dokploy) y no se guarda en git. Es pública por naturaleza
+// (el navegador la usa), su protección es la restricción por dominio en Google Cloud.
+router.get('/config.js', ( req: Request, res: Response ) => {
+    const config = { googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '' };
+    res.type('application/javascript')
+       .set('Cache-Control', 'no-store')
+       .send( `window.MAPAS_CONFIG = ${ JSON.stringify( config ) };` );
 });
 
+// Health check
 router.get('/health', ( req: Request, res: Response ) => {
     res.json({ ok: true, status: 'running' });
 });

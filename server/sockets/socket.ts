@@ -1,5 +1,4 @@
-import { Socket } from 'socket.io';
-import socketIO from 'socket.io';
+import { Socket, Server as IOServer } from 'socket.io';
 import http from 'http';
 import { Usuario } from '../classes/usuario';
 import { usuariosConectados, mapa } from '../global/state';
@@ -68,7 +67,7 @@ export const marcadorMover = ( cliente: Socket ) => {
 
 }
 
-export const marcadorBorrar = ( cliente: Socket, io: socketIO.Server ) => {
+export const marcadorBorrar = ( cliente: Socket, io: IOServer ) => {
 
     cliente.on('marcador-borrar', (id: string) => {
         if (id !== '1') {
@@ -84,7 +83,7 @@ export const marcadorBorrar = ( cliente: Socket, io: socketIO.Server ) => {
 
 //Graficas
 
-export const conectarCliente = ( cliente: Socket, io: socketIO.Server ) => {
+export const conectarCliente = ( cliente: Socket, io: IOServer ) => {
 
     const usuario = new Usuario( cliente.id );
     usuariosConectados.agregar( usuario );
@@ -111,7 +110,7 @@ export const conectarCliente = ( cliente: Socket, io: socketIO.Server ) => {
 }
 
 
-export const desconectar = ( cliente: Socket, io: socketIO.Server ) => {
+export const desconectar = ( cliente: Socket, io: IOServer ) => {
 
     cliente.on('disconnect', () => {
         console.warn('.');
@@ -126,7 +125,7 @@ export const desconectar = ( cliente: Socket, io: socketIO.Server ) => {
 
 
 // Escuchar mensajes
-export const mensaje = ( cliente: Socket, io: socketIO.Server ) => {
+export const mensaje = ( cliente: Socket, io: IOServer ) => {
 
     cliente.on('mensaje', (  payload: { de: string, cuerpo: string }  ) => {
 
@@ -139,7 +138,7 @@ export const mensaje = ( cliente: Socket, io: socketIO.Server ) => {
 }
 
 // Configurar usuario
-export const configurarUsuario = ( cliente: Socket, io: socketIO.Server ) => {
+export const configurarUsuario = ( cliente: Socket, io: IOServer ) => {
 
     cliente.on('configurar-usuario', (  payload: { nombre: string }, callback: Function  ) => {
 
@@ -159,7 +158,7 @@ export const configurarUsuario = ( cliente: Socket, io: socketIO.Server ) => {
 
 
 // Obtener Usuarios
-export const obtenerUsuarios = ( cliente: Socket, io: socketIO.Server ) => {
+export const obtenerUsuarios = ( cliente: Socket, io: IOServer ) => {
 
     cliente.on('obtener-usuarios', () => {
 

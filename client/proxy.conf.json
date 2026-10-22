@@ -1,0 +1,6 @@
+{
+  "/mapa": { "target": "http://localhost:3000", "secure": false },
+  "/usuarios": { "target": "http://localhost:3000", "secure": false },
+  "/config.js": { "target": "http://localhost:3000", "secure": false },
+  "/socket.io": { "target": "http://localhost:3000", "secure": false, "ws": true }
+}
