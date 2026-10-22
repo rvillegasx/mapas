@@ -1,6 +1,6 @@
 # Plan: Angular 7 → 22 y la app servida desde mapas.appsmx.tech
 
-Fecha: 22-oct-2026. Estado: **aprobado (22-oct-2026), sin ejecutar.**
+Fecha: 22-oct-2026. Estado: **✅ completo (22-oct-2026).**
 
 ## Objetivo
 
@@ -78,3 +78,14 @@ Orden recomendado: 1 → (2+3 en un PR) → 4 → 5 → 6 → 7.
 1. `maps.appsmx.tech` **se borra de una vez**, sin periodo de redirección (paso 6).
 2. Se mantiene el aspecto actual tal cual; cambios visuales en otro PR.
 3. Se reutiliza la llave actual de Google Maps; solo se toca Google Cloud si falla en el paso 4.
+
+## Estado al cierre (22-oct-2026)
+
+| Paso | Resultado |
+|---|---|
+| 1. Plan | PR #2 |
+| 2+3. Angular 22 + Socket.io 4 + app servida por el servidor | PR #3, desplegado solo (autodeploy) |
+| 4. Despliegue | https://mapas.appsmx.tech: mapa carga con la llave actual, punto verde, marcadores y sesiones en vivo; `/health` 200; caché de geolocalización conservada |
+| 5. Google Cloud | no hizo falta: la llave funciona en mapas.appsmx.tech |
+| 6. Cloudflare | borrados el registro DNS `maps.appsmx.tech`, el dominio y el proyecto de Pages `maps-web` (los demás proyectos de Pages intactos); repo `maps-web` archivado |
+| 7. Docs | README, CLAUDE.md, NODE_UPGRADE.md (PR #3) |
